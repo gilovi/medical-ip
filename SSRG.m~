@@ -25,11 +25,13 @@ function SSRG(input_FileName, coarse_seg, organ_type, output_fileName)
         left_lung(CC.PixelIdxList{m_idx}) = 0;
         right_lung = slice-left_lung;
        
-        if organ_type == 1 
-            seed = left_lung;
-        else
-            seed = right_lung;
-        end
+%         if ‫‪organ_type == 1 
+%             seed = left_lung;
+%         else
+%             seed = right_lung;
+%         end
+        if 1>0
+            
 
         %cent = regionprops(CC,'Centroid');
         %seed = cent(L_ind);    
