@@ -30,10 +30,19 @@ function SSRG(input_FileName, coarse_seg, organ_type, output_fileName)
         else
             seed = right_lung;
         end
-
+        
+        %passing on all the rest of the image
+        p = cat(2,ind+1:dim(3),1:ind-1);
+        for i = p
+            
         %cent = regionprops(CC,'Centroid');
         %seed = cent(L_ind);    
     end
 
 end
 
+%'wline = 0.005 ,term = 0.5 ,sigma 2 = 8 ,Mu = 0, Alpha=0.05')
+%'wline = 0.005 ,term = 0.5 ,sigma 2 = 8 ,Mu = 0, Alpha=0.05 ,Beta =0.01 , kappa=17, Delta = -0.5'
+%'wline = 0.005 ,term = 0.5 ,sigma 2 = 8 ,Mu = 0, Alpha=0.05 ,Beta =0 , kappa=4, Delta = -0.1')
+%'wline = 0 ,term = 0.5 ,sigma 2 = 8 ,Mu = 0, Alpha=0.05 ,Beta =0.01 , kappa=4, Delta = -0.1')
+%'wline = 0 ,term = 0.5 , sigma1 =4 sigma 2 = 5 ,Mu = 0, Alpha=0.05 ,Beta =0.01 , kappa=4, Delta = -0.1')
