@@ -15,7 +15,7 @@ function SSRG(input_FileName, coarse_seg, organ_type, output_fileName)
     if organ_type < 3 
         %finding largest cut
         h = 1 : dim(3);
-        cut_size = arrayfun(@(x) coarse_seg(a(:,:,x)) ,h);
+        cut_size = arrayfun(@(x) nnz(coarse_seg(:,:,x)) ,h);
         [M,ind]= max(cut_size);
         slice = coarse_seg(:,:,ind);
         left_lung = slice;
@@ -37,9 +37,9 @@ function SSRG(input_FileName, coarse_seg, organ_type, output_fileName)
             
         %cent = regionprops(CC,'Centroid');
         %seed = cent(L_ind);    
-    end
+        end
 
-end
+    end
 
 %'wline = 0.005 ,term = 0.5 ,sigma 2 = 8 ,Mu = 0, Alpha=0.05')
 %'wline = 0.005 ,term = 0.5 ,sigma 2 = 8 ,Mu = 0, Alpha=0.05 ,Beta =0.01 , kappa=17, Delta = -0.5'
