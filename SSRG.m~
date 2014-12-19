@@ -10,19 +10,18 @@ function SSRG(input_FileName, coarse_seg, organ_type, output_fileName)
 %   coarse_seg : the coarse segmentation
 %   organ_type : the organ to segment 1 for left lung 2 for right and 3 for
 %   output_fileName : the name of the outputed segmented organ
-
+%%
     mat = load_untouch_nii_gzip(input_FileName);
-    %%
     orig_im = mat.img;
     dim = size(orig_im);
     
     h = 1 : dim(3);
     cut_size = arrayfun(@(x) nnz(coarse_seg(:,:,x)) ,h);
- %%     
+      
     % dealing with lungs
     if organ_type < 3 
-% finding largest cut
-  %%      
+%% finding largest cut
+        
         [M,ind]= max(cut_size);
         seg_slice = coarse_seg(:,:,ind);
         orig_slice = orig_im(:,:,ind);
@@ -35,7 +34,7 @@ function SSRG(input_FileName, coarse_seg, organ_type, output_fileName)
             seg_slice = coarse_seg(:,:,ind); 
             [left, right] = lungs_clean_sep(seg_slice);
         end
-%%      
+%%       
        if organ_type == 1 
             mask = left;
         else
@@ -46,7 +45,7 @@ function SSRG(input_FileName, coarse_seg, organ_type, output_fileName)
     end
     
     if organ_type == 3
-%      [M,ind]= max(cut_size);
+%%        [M,ind]= max(cut_size);
         seg_slice = coarse_seg(:,:,ind);
         orig_slice = orig_im(:,:,ind);
         
@@ -55,24 +54,24 @@ function SSRG(input_FileName, coarse_seg, organ_type, output_fileName)
         
     end
     
- %%
+ %% 
  % first slice
     SEG = zeros(size(orig_im));
-    mask = imfill(mask,'holes');
+   
     SEG(:,:,ind) = mask;
-    
+      
 %    the rest slices
-%%    
+    
     % going up
     for i = ind+1:dim(3)
-%%        
+        
         mask = coarse_seg(:,:,i);
         if ~any(mask(:))
             break
         end
-        seg = get_seg( SEG(:,:,i-1), mask);
+        seg = get_seg(mask, orig_im(:,:,i));
         SEG(:,:,i) = seg;
-       
+        
     end
     %going down
     for i = ind-1:-1:1
@@ -80,11 +79,11 @@ function SSRG(input_FileName, coarse_seg, organ_type, output_fileName)
         if ~any(mask(:))
             break
         end
-        seg = get_seg(orig_im(:,:,i+1), mask);
+        seg = get_seg(mask, orig_im(:,:,i));
         SEG(:,:,i) = seg;
         
     end
-   
+    
     mat.img=SEG;
     save_untouch_nii(mat , output_fileName);
     

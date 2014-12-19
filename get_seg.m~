@@ -8,8 +8,8 @@ function [seg] = get_seg( prev_mask , mask )
     CC = bwconncomp(itrsct,4);
     seg = zeros(size(mask));
     % restore accidently thrown parts
-    for i = 1:length(CC.PixelIdxList)
-       
+    for i=1:length(CC.PixelIdxList)
+
         i_seg = zeros(size(mask));
 
         i_itrsct = zeros(size(mask));
