@@ -1,0 +1,1 @@
+SSRG('/cs/casmip/public/mip_2015_ex1/data/10000412_1_CTce_ThAb.nii.gz',coarse_seg,1,'LEFt_LuNg')
