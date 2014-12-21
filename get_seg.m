@@ -1,29 +1,56 @@
-function [seg] = get_seg( prev_mask , mask )
+function [seg] = get_seg( prev_mask , mask)
 
 
     filled = imfill(mask,'holes');
+    cc_mask = bwconncomp(filled,4);
+    
+    %last_area = sum(prev_mask(:));
+    se = strel('disk',3);
+    
+    
     %throw unrelated components
-    itrsct = filled .* prev_mask;
-
-    CC = bwconncomp(itrsct,4);
+    itrsct = (filled) .* prev_mask;
+    itrsct = itrsct > 0;
+    
+    CC_itrsct = bwconncomp(itrsct,4);
     seg = zeros(size(mask));
     % restore accidently thrown parts
-    for i = 1:length(CC.PixelIdxList)
-       
+    for i = 1: length(CC_itrsct.PixelIdxList)
         i_seg = zeros(size(mask));
-
-        i_itrsct = zeros(size(mask));
+        Indexes = CC_itrsct.PixelIdxList{i};
+        itrsct_area = sum(Indexes>0);
         
-        i_itrsct(CC.PixelIdxList{i}) = 1;
-
+        %try to take the original mask componet that fits the intersection
+        if numel(Indexes) < 5
+            continue
+        end
+        compo_pos = cellfun(@(V) any(V==Indexes(5)) ,cc_mask.PixelIdxList);
+        comp = zeros(size(mask)); 
+        comp(cc_mask.PixelIdxList{compo_pos > 0})=1;
+        comp_area = sum(comp(:));
+        % verifies it dont takes a component that is not making sense
+        if ~(comp_area < itrsct_area/3 || comp_area > itrsct_area * 1.5 )
+            i_seg = imfill(comp,'holes');
+            
+        else
+        % if the former method didnt worked , make a simple intersection based segmenting  
+        i_itrsct = zeros(size(mask)); 
+        i_itrsct(CC_itrsct.PixelIdxList{i}) = 1;
+        
         thic = bwmorph(i_itrsct,'thicken',3) ;
-        tmp = filled.* thic;
+        tmp = filled .* thic;
         %throw unwanted added components
-        CC = bwconncomp(tmp,4);
-        numPixels = cellfun(@numel,CC.PixelIdxList);   
+        CC_thic = bwconncomp(tmp,4);
+        numPixels = cellfun(@numel,CC_thic.PixelIdxList);   
         [M,m_idx] = max(numPixels);
-        i_seg(CC.PixelIdxList{m_idx}) = 1;
-
+        i_seg(CC_thic.PixelIdxList{m_idx}) = 1;
+        %smoothen
+        
+        eroded = imerode(i_seg,se);
+        i_seg = imdilate(eroded,se);
+        
+        end
+        
         seg = seg + i_seg;
     
     end
@@ -67,6 +94,8 @@ function [seg] = get_seg( prev_mask , mask )
 %         
 %        % imshow(SEG)%%%
 %     end
-
+    seg(seg>0) = 1;
+    
+   
 end
 
