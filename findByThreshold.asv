@@ -1,12 +1,9 @@
 function [coarse_seg] = findByThreshold(inputFileName , i_min , i_max , outputFilename )
 %‫‪findByThreshold 
 
-if isstruct(inputFileName)
-    mat = inputFileName;
-else
-    mat = load_untouch_nii_gzip(inputFileName);
-end
 
+
+mat = load_untouch_nii_gzip(inputFileName);
 Ts_im =  (i_min < mat.img) .* (mat.img < i_max);
 dim = size(Ts_im);
 aprox_lat = round(dim(3)/4);
